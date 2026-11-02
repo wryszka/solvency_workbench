@@ -735,7 +735,11 @@ def _extract_responses_text(resp: Any) -> tuple[str, list[str]]:
     # Chat-completions shape: {"choices": [{"message": {"content": "..."}}]}
     for ch in (d.get("choices") or []):
         msg = (ch or {}).get("message") or {}
-        if msg.get("content"):
+        if isinstance(msg.get("content"), list):
+            for c in msg["content"]:
+                if isinstance(c, dict) and c.get("type") == "text":
+                    _add_text(c.get("text"))
+        elif msg.get("content"):
             texts.append(msg["content"])
         for tc in (msg.get("tool_calls") or []):
             fn = (tc or {}).get("function") or {}

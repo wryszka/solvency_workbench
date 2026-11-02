@@ -126,6 +126,7 @@ targets:
       entity_type: composite
       pricing_app_url: https://pricing-workbench-7474656169654171.aws.databricksapps.com/
       supervisor_endpoint_name: workbench-supervisor
+      genie_space_id: 01f14b086fda159fa26b3344740e6db5  # "Solvency II Composite — Bricksurance SE"
       # fm_model_endpoints: ""   # empty = use Claude/Llama trio (standard workspace)
       # For free-edition Databricks (no Claude available), uncomment:
       # fm_model_endpoints: "databricks-gpt-oss-120b"

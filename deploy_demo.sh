@@ -140,13 +140,15 @@ USERNAME_FROM_PROFILE=$(databricks current-user me --profile "$PROFILE" -o json 
 BUNDLE_NAME=$(echo "$RESOLVED" | python3 -c "import sys,json; print(json.load(sys.stdin).get('bundle',{}).get('name',''))" 2>/dev/null || echo "solvency2_workbench")
 APP_YAML_PATH="/Workspace/Users/$USERNAME_FROM_PROFILE/.bundle/$BUNDLE_NAME/$TARGET/files/src/app/app.yaml"
 RESOLVED_APP_YAML=$(mktemp)
+# Genie space id: the target's bundle var (dev pins the live space) — blanking it here broke Genie ask.
+GENIE_SPACE_VAR=$(echo "$RESOLVED" | python3 -c "import sys,json; print(json.load(sys.stdin).get('variables',{}).get('genie_space_id',{}).get('value',''))" 2>/dev/null || echo "")
 sed \
   -e "s|\${var.catalog_name}|$CATALOG|g" \
   -e "s|\${var.schema_name}|$SCHEMA|g" \
   -e "s|\${var.warehouse_id}|$WAREHOUSE|g" \
   -e "s|\${var.app_display_name}|Actuarial Workbench|g" \
   -e "s|\${var.dashboard_id}||g" \
-  -e "s|\${var.genie_space_id}||g" \
+  -e "s|\${var.genie_space_id}|$GENIE_SPACE_VAR|g" \
   -e "s|\${var.backstage_notebook_path}||g" \
   -e "s|\${var.pricing_app_url}||g" \
   -e "s|\${var.fm_model_endpoints}||g" \

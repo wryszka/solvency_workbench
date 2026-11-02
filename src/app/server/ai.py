@@ -122,7 +122,7 @@ def _call_llm(system_prompt: str, user_prompt: str, agent_name: str = "unknown")
     if response.choices:
         msg = response.choices[0].message
         if msg:
-            text = msg.content or ""
+            text = _flatten_content(msg.content)
 
     input_tokens = 0
     output_tokens = 0
@@ -175,6 +175,18 @@ async def generate_review(
 # agent (src/07_AI_Agents/register_agents.py), which does tool-calling natively
 # over governed UC functions. The dead helper was removed (security review 5.3):
 # nothing in the app should hand-extract auth tokens.
+
+
+def _flatten_content(content) -> str:
+    """Sonnet 5 returns message content as either a plain string or a list of typed
+    blocks (reasoning / text / …). Flatten to the visible prose."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = [b.get("text", "") for b in content
+                 if isinstance(b, dict) and b.get("type") == "text" and b.get("text")]
+        return "\n".join(parts).strip()
+    return ""
 
 
 def reset_endpoint_cache():
